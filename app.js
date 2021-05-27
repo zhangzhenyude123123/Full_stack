@@ -1,16 +1,14 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require("express-session");
+const MongoStore = require('connect-mongo');
+const flash = require('connect-flash');
 
-var session = require("express-session");
-var MongoStore = require('connect-mongo');
-var flash = require('connect-flash');
-
-var settings = require('./setting');
-var indexRouter = require('./routes/index');
-var app = express();
+const settings = require('./setting');
+const indexRouter = require('./routes/index');
+const app = express();
 
 
 // view engine setup
@@ -23,43 +21,31 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-
-// app.use(session({
-//   secret:settings.cookieSecret,            //用来防止篡改cookie
-//   key:settings.db,                        //cookie's name
-//   cookie:{maxAge:1000*60*60*24*30},       //30days
-//   store: new MongoStore({
-//     db:settings.db,
-//     host:settings.host,
-//     port:settings.port,
-//     url: 'mongodb://localhost/eforum'
-//   }),
-//   resave:true,
-//   saveUninitialized:false
-// }));
-
-
+app.use(session({
+  secret: settings.cookieSecret,
+  store: MongoStore.create({
+    mongoUrl: 'mongodb://localhost/eforum',
+    dbname: settings.db}),
+  resave: false,
+  saveUninitialized: true
+}));
+//设置flash，这步要在路由之前
 app.use(flash());
-// app.dynamicHelpers({
-//   user: function(req, res) {
-//     return req.session.user;
-//   },
-//   error: function(req, res) {
-//     var err = req.flash('error');
-//     if (err.length)
-//       return err;
-//     else
-//       return null;
-//   },
-//   success: function(req, res) {
-//     var succ = req.flash('success');
-//     if (succ.length)
-//       return succ;
-//     else
-//       return null;
-//   },
-// });
+
+app.use(function(req,res,next){
+  res.locals.user=req.session.user;
+
+  var err = req.flash('error');
+  var success = req.flash('success');
+
+  res.locals.error = err.length ? err : null;
+  res.locals.success = success.length ? success : null;
+
+  next();
+});
+
+
+app.use('/', indexRouter);
 
 //Test db connected
 // var mongoose = require('mongoose');

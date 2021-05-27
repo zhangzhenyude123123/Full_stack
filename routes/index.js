@@ -26,8 +26,8 @@ router.post('/reg', function(req, res) {
     }
 
     //生成口令的散列值
-    var md5 = crypto.createHash('md5');
-    var password = md5.update(req.body.password).digest('base64');
+    const md5 = crypto.createHash('md5');
+    const password = md5.update(req.body.password).digest('base64');
 
     var newUser = new User({
         name: req.body.username,
@@ -48,7 +48,7 @@ router.post('/reg', function(req, res) {
                 req.flash('error', err);
                 return res.redirect('/reg');
             }
-            //req.session.user = newUser;
+            req.session.user = newUser;
             req.flash('success', '註冊成功');
             res.redirect('/');
         });
@@ -65,8 +65,8 @@ router.get('/login',function (req,res){
 router.post('/login', checkNotLogin);
 router.post('/login', function(req, res) {
     //生成口令的散列值
-    var md5 = crypto.createHash('md5');
-    var password = md5.update(req.body.password).digest('base64');
+    const md5 = crypto.createHash('md5');
+    const password = md5.update(req.body.password).digest('base64');
 
     User.get(req.body.username, function(err, user) {
         if (!user) {
@@ -92,18 +92,18 @@ router.get('/logout', function(req, res) {
 });
 
 function checkLogin(req, res, next) {
-    // if (!req.session.user) {
-    //     req.flash('error', '未登入');
-    //     return res.redirect('/login');
-    // }
+    if (!req.session.user) {
+        req.flash('error', '未登入');
+        return res.redirect('/login');
+    }
     next();
 }
 
 function checkNotLogin(req, res, next) {
-    // if (req.session.user) {
-    //     req.flash('error', '已登入');
-    //     return res.redirect('/');
-    // }
+    if (req.session.user) {
+        req.flash('error', '已登入');
+        return res.redirect('/');
+    }
     next();
 }
 
