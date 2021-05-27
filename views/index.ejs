@@ -1,38 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title><%= title %> - EasyForum</title>
-  <link rel='stylesheet' href='stylesheets/bootstrap.css' />
-  <style type="text/css">
-    body {
-      padding-top: 60px;
-      padding-bottom: 40px;
-    }
-  </style>
-  <link href="stylesheets/bootstrap-responsive.css" rel="stylesheet">
-</head>
-<body>
-
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-      <a class="brand" href="/">EasyForum</a>
-      <div class="nav-collapse">
-        <ul class="nav">
-          <li class="active"><a href="/">MainPage</a></li>
-          <li><a href="/login">Login</a></li>
-          <li><a href="/reg">Register</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
+<%include header.ejs%>
 <div class="hero-unit">
   <h1>Welcome to EasyForum</h1>
   <p>This is based on Node.js Forum System</p>
@@ -61,7 +27,4 @@
   </div>
 </div>
 
-</body>
-<!--<script src="/javascripts/jquery.js"></script>-->
-<!--<script src="/javascripts/bootstrap.js"></script>-->
-</html>
+<%include footer.ejs%>
