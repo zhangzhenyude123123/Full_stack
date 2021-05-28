@@ -1,13 +1,25 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Post = require('../models/post');
 var crypto = require('crypto');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', {
-    title: 'MainPage'
-  });
+// router.get('/', function(req, res, next) {
+//   res.render('index', {
+//     title: 'MainPage'
+//   });
+// });
+router.get('/', function(req, res) {
+    Post.get(null, function(err, posts) {
+        if (err) {
+            posts = [];
+        }
+        res.render('index', {
+            title: 'MainPage',
+            posts: posts,
+        });
+    });
 });
 
 /* Register */
@@ -106,5 +118,40 @@ function checkNotLogin(req, res, next) {
     }
     next();
 }
+
+/* postmicroblog */
+router.post('/post',checkLogin);
+router.post('/post',function (req,res){
+    var currentUser = req.session.user;
+    var post = new Post(currentUser.name, req.body.post);
+    post.save(function(err) {
+        if (err) {
+            req.flash('error', err);
+            return res.redirect('/');
+        }
+        req.flash('success', 'Post Success');
+        res.redirect('/u/' + currentUser.name);
+    });
+});
+
+/* this is user to get there */
+router.get('/u/:user', function(req, res) {
+    User.get(req.params.user, function(err, user) {
+        if (!user) {
+            req.flash('error', '用戶不存在');
+            return res.redirect('/');
+        }
+        Post.get(user.name, function(err, posts) {
+            if (err) {
+                req.flash('error', err);
+                return res.redirect('/');
+            }
+            res.render('user', {
+                title: user.name,
+                posts: posts,
+            });
+        });
+    });
+});
 
 module.exports = router;
