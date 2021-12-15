@@ -22,7 +22,7 @@ You must use ReactJS for the frontend.
 
 #### Introduction
 
-**1. ** The “Main Module“
+**1. The “Main Module“**
 
 1.1 The “Main Page” Module
 
